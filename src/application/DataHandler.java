@@ -123,6 +123,21 @@ public class DataHandler {
 		
 	}
 
+	/** Generates and executes INSERT statement to create a Moto in Vehicle table  */
+	public static void saveMoto(Moto moto)
+	{
+		try {
+			int nextId = c.createStatement().executeQuery("SELECT MAX(id) FROM Vehicle").getInt(1) + 1;
+			c.createStatement().execute(                                                               //insert query
+					"INSERT INTO Vehicle (id, plate, totalRentalDays, buyCost) VALUES ("+nextId+",'"+moto.plate+"', "+moto.totalRentDays+", "+moto.buyCost+") ;");
+
+			System.out.println("Saved successfully! " +nextId+":"+moto.plate+"   "+moto.totalRentDays+"   "+moto.buyCost);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+
 	public static Connection getConnection() {
 		return c;
 	}

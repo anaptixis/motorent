@@ -37,7 +37,7 @@
     <bottom>
         <VBox id="vbox_info" alignment="BOTTOM_CENTER" prefHeight="20.0">
             <children>
-                <Label contentDisplay="CENTER" prefHeight="20.0" text="Info goes here" textAlignment="CENTER" />
+                <Label id="info_lbl" contentDisplay="CENTER" prefHeight="20.0" text="Info goes here" textAlignment="CENTER" />
             </children>
         </VBox>
     </bottom>
