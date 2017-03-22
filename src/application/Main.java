@@ -1,7 +1,6 @@
 package application;
 	
 import javafx.application.Application;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
@@ -14,7 +13,6 @@ public class Main extends Application {
 		launch(args);
 		}  								//Main class
 
-
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -23,8 +21,7 @@ public class Main extends Application {
 			primaryStage.setTitle("MotoRent");
 			primaryStage.setScene(new Scene(root,800, 800));
 			primaryStage.show();
-			
-			
+
 			
 		} catch(Exception e) {
 			e.printStackTrace();
