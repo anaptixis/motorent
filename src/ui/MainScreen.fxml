@@ -118,17 +118,17 @@
                         </VBox>
                         <VBox id="button_area" alignment="CENTER" HBox.hgrow="ALWAYS">
                             <children>
-                                <Button id=" " fx:id="save_btn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#save_btn_clicked" text="Καταχώρηση">
+                                <Button id=" " fx:id="save_btn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#insertNewMoto" text="Καταχώρηση">
                                     <VBox.margin>
                                         <Insets bottom="5.0" top="5.0" />
                                     </VBox.margin>
                                 </Button>
-                                <Button id="edit_btn" fx:id="edit_btn_clicked" contentDisplay="CENTER" mnemonicParsing="false" onAction="#edit_btn_clicked" text="Επεξεργασία">
+                                <Button id="edit_btn" fx:id="edit_btn_clicked" contentDisplay="CENTER" mnemonicParsing="false" onAction="#editMoto" text="Επεξεργασία">
                                     <VBox.margin>
                                         <Insets bottom="5.0" top="5.0" />
                                     </VBox.margin>
                                 </Button>
-                                <Button id="delete_btn" fx:id="delete_btn_clicked" contentDisplay="CENTER" mnemonicParsing="false" onAction="#delete_btn_clicked" text="Διαγραφή">
+                                <Button id="delete_btn" fx:id="delete_btn_clicked" contentDisplay="CENTER" mnemonicParsing="false" onAction="#deleteMoto" text="Διαγραφή">
                                     <VBox.margin>
                                         <Insets bottom="5.0" top="5.0" />
                                     </VBox.margin>
@@ -139,11 +139,11 @@
                 </HBox>
                 <HBox id="main_grid">
                     <children>
-                        <TextArea prefHeight="200.0" prefWidth="200.0" text="GRID" HBox.hgrow="ALWAYS">
-                            <font>
-                                <Font size="69.0" />
-                            </font>
-                        </TextArea>
+                  <TableView fx:id="vehicle_tableView" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                     </HBox.margin>
+                  </TableView>
                     </children>
                 </HBox>
             </children></VBox>

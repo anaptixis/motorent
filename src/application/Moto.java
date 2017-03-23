@@ -8,9 +8,13 @@ import java.util.ArrayList;
  */
 public class Moto extends Vehicle {
 
-    public Moto(String plate, int totalRentDays, double pricePerDay, double buyCost, ArrayList<Cost> costs) {
-        super(plate, totalRentDays, pricePerDay, buyCost, costs);
+    public Moto(int id, String plate, int totalRentDays, double pricePerDay, double buyCost, ArrayList<Cost> costs) {
+        super(id, plate, totalRentDays, pricePerDay, buyCost, costs);
     }
+
+	public Moto(String plate, int totalRentDays, double pricePerDay, double buyCost, ArrayList<Cost> costs) {
+		super(plate, totalRentDays, pricePerDay, buyCost, costs);
+	}
     
     public Moto(String plate)
     {

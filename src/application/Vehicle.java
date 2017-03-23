@@ -8,12 +8,22 @@ import java.util.ArrayList;
  * Inherit only
  */
 public abstract class Vehicle {
-    String plate;                                       //vehicle plates
-    int totalRentDays;                               //how many days it has been rented
-    double pricePerDay;                                 //current price per day
-    double buyCost;                                     //initial price
+    int     id;                                         //table's Primary Key
+    String  plate;                                      //vehicle plates
+    int     totalRentDays;                              //how many days it has been rented
+    double  pricePerDay;                                //current price per day
+    double  buyCost;                                    //initial price
     ArrayList<Cost> costs = new ArrayList<Cost>();      //vehicle 's functional costs
     ArrayList<Rental> rentals=new ArrayList<Rental>();
+
+    public Vehicle(int id, String plate, int totalRentDays, double pricePerDay, double buyCost, ArrayList<Cost> costs) {
+        this.id = id;
+        this.plate = plate;
+        this.totalRentDays = totalRentDays;
+        this.pricePerDay = pricePerDay;
+        this.buyCost = buyCost;
+        this.costs = costs;
+    }
 
     public Vehicle(String plate, int totalRentDays, double pricePerDay, double buyCost, ArrayList<Cost> costs) {
         this.plate = plate;
@@ -22,7 +32,7 @@ public abstract class Vehicle {
         this.buyCost = buyCost;
         this.costs = costs;
     }
-    
+
     public Vehicle(String plate)
     {
     	this.plate=plate;
@@ -39,6 +49,14 @@ public abstract class Vehicle {
     public void addNewCost (Cost c)
     {
     	costs.add(c);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getPlate() {

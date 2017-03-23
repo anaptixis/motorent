@@ -1,7 +1,8 @@
 package application;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import java.sql.*;
-import java.util.*;
 
 public class DataHandler {
 
@@ -66,6 +67,7 @@ public class DataHandler {
 		try {
 			c.createStatement().execute("CREATE TABLE IF NOT EXISTS Vehicle " +
 					"( id INT PRIMARY KEY, " +
+					"  category_id INT NOT NULL," +
 					"  plate TEXT NOT NULL," +
 					"  totalRentalDays INT DEFAULT 0," +
 					"  pricePerDay REAL DEFAULT 0," +
@@ -111,9 +113,21 @@ public class DataHandler {
 	}
 
 
-	public static ArrayList<Vehicle> getSavedVehicles()
+	public static ObservableList<Vehicle> getSavedVehicles()
 	{
-		ArrayList<Vehicle> vehicles=new ArrayList<Vehicle>();
+		ObservableList<Vehicle> vehicles= FXCollections.observableArrayList();
+
+		try {
+			ResultSet rs = c.createStatement().executeQuery("SELECT * FROM Vehicle ;");
+			while(rs.next())
+			{
+				vehicles.add(new Moto(rs.getInt("id"), rs.getString("plate"), rs.getInt("totalRentalDays"), rs.getDouble("pricePerDay"), rs.getDouble("buyCost"), null));
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 		
 		return vehicles;
 	}
@@ -123,20 +137,28 @@ public class DataHandler {
 		
 	}
 
-	/** Generates and executes INSERT statement to create a Moto in Vehicle table  */
-	public static void saveMoto(Moto moto)
+	/** Generates and executes an INSERT statement to create a Moto in Vehicle table  */
+	public static void insertMoto(Moto moto)
 	{
 		try {
 			int nextId = c.createStatement().executeQuery("SELECT MAX(id) FROM Vehicle").getInt(1) + 1;
 			c.createStatement().execute(                                                               //insert query
-					"INSERT INTO Vehicle (id, plate, totalRentalDays, buyCost) VALUES ("+nextId+",'"+moto.plate+"', "+moto.totalRentDays+", "+moto.buyCost+") ;");
+					"INSERT INTO Vehicle (id, category_id, plate, totalRentalDays, buyCost) VALUES ("+nextId+", 1, '"+moto.plate+"', "+moto.totalRentDays+", "+moto.buyCost+") ;");
 
-			System.out.println("Saved successfully! " +nextId+":"+moto.plate+"   "+moto.totalRentDays+"   "+moto.buyCost);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
+	/** Generates and executes a DELETE statement to delete a Moto in Vehicle table based on id  */
+	public static void deleteMoto(Moto moto)
+	{
+		try {
+			c.createStatement().execute("DELETE FROM Vehicle WHERE id = "+ moto.getId() +";");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static Connection getConnection() {
 		return c;
