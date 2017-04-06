@@ -68,7 +68,7 @@ public class DataHandler {
 			c.createStatement().execute("CREATE TABLE IF NOT EXISTS Vehicle " +
 					"( id INT PRIMARY KEY, " +
 					"  category_id INT NOT NULL," +
-					"  plate TEXT NOT NULL," +
+					"  plate TEXT UNIQUE NOT NULL," +
 					"  totalRentalDays INT DEFAULT 0," +
 					"  pricePerDay REAL DEFAULT 0," +
 					"  buyCost REAL default 0 );");
@@ -112,7 +112,6 @@ public class DataHandler {
 		}
 	}
 
-
 	public static ObservableList<Vehicle> getSavedVehicles()
 	{
 		ObservableList<Vehicle> vehicles= FXCollections.observableArrayList();
@@ -131,19 +130,27 @@ public class DataHandler {
 		
 		return vehicles;
 	}
-	
-	public static void saveVehicles()
+
+	/** Generates and executes an UPDATE statement to alter a Moto in Vehicle table */
+	public static void updateVehicle(Vehicle v)
 	{
-		
+		try {
+			c.createStatement().execute(                                                               //insert query
+					"UPDATE Vehicle SET totalRentalDays = " +v.getTotalRentDays()+ ", buyCost = " +v.getBuyCost()+
+							" WHERE plate = '" +v.getPlate()+  "' ; COMMIT;");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/** Generates and executes an INSERT statement to create a Moto in Vehicle table  */
-	public static void insertMoto(Moto moto)
+	public static void insertVehicle(Vehicle v)
 	{
 		try {
 			int nextId = c.createStatement().executeQuery("SELECT MAX(id) FROM Vehicle").getInt(1) + 1;
 			c.createStatement().execute(                                                               //insert query
-					"INSERT INTO Vehicle (id, category_id, plate, totalRentalDays, buyCost) VALUES ("+nextId+", 1, '"+moto.plate+"', "+moto.totalRentDays+", "+moto.buyCost+") ;");
+				"INSERT INTO Vehicle (id, category_id, plate, totalRentalDays, buyCost) VALUES ("+nextId+", 1, '"+v.plate+"', "+v.totalRentDays+", "+v.buyCost+") ;");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -151,16 +158,35 @@ public class DataHandler {
 	}
 
 	/** Generates and executes a DELETE statement to delete a Moto in Vehicle table based on id  */
-	public static void deleteMoto(Moto moto)
+	public static void deleteVehicle(Vehicle v)
 	{
 		try {
-			c.createStatement().execute("DELETE FROM Vehicle WHERE id = "+ moto.getId() +";");
+			c.createStatement().execute("DELETE FROM Vehicle WHERE id = "+ v.getId() +";");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
+	/** Generates and executes a Select statement to search for a Vehicle with a specific plate */
+	public static boolean vehicleExists(String plate)
+	{
+		ObservableList<Vehicle> vehicles= FXCollections.observableArrayList();
+		int rowCount = 0;
+		try {
+			ResultSet rs = c.createStatement().executeQuery("SELECT * FROM Vehicle WHERE Vehicle.plate = '" +plate+ "';");
+			while(rs.next())
+			{
+				rowCount++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rowCount == 1 ;
+	}
+
 	public static Connection getConnection() {
 		return c;
 	}
+
+
 }

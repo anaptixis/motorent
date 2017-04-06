@@ -3,6 +3,8 @@ package application;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -31,6 +33,7 @@ public class Main extends Application {
 				}
 
 			});
+
 			primaryStage.show();
 			
 		} catch(Exception e) {

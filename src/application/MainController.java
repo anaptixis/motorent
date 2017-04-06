@@ -9,6 +9,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
+import java.util.Date;
+
 /**
  * Created by panos on 5/2/2017.
  *
@@ -20,6 +22,9 @@ import javafx.stage.Stage;
 public class MainController {
 
     public static String AlertYesNoBoxChoise;                                                   //stores user's selection for AlertBox('Ναι'/'Όχι')
+
+    Vehicle prevClickedVehicle;
+    Date lastClickTime;
 
     /** On MainScreen open, all Vehicles are loaded from DB and shown in TableView */
     public static void loadAllVehicles()
@@ -60,52 +65,43 @@ public class MainController {
         grid.getColumns().addAll(plateCol, totalRentDaysCol, totalGainCol, finalGainCol);
     }
 
-    /** Collects data from UI, creates a Moto and calls DataHandler to store it in DB */
-    public void insertNewMoto()
+    /** Saves the current vehicle: If it exists, it updates it, else it inserts it */
+    public void saveMoto()
     {
-        try {
-
-            Stage currentStage = new Stage();
-
-            ObservableList<Stage> stages = StageHelper.getStages() ;                            //get current stage to access textFields
-            for(Stage stage : stages)
+        Stage currentStage = new Stage();
+        ObservableList<Stage> stages = StageHelper.getStages() ;                            //get current stage to access textFields
+        for(Stage stage : stages)
+        {
+            if(stage.isShowing())
             {
-                if(stage.isShowing())
-                {
-                    currentStage = stage;
-                }
+                currentStage = stage;
             }
-            TextArea txtArea = (TextArea)(currentStage.getScene().lookup("#plate_input"));      //get plate
-            String plate = txtArea.getText();
-
-
-            txtArea = (TextArea)(currentStage.getScene().lookup("#rentalDays_input"));          //get rentalDays
-            int totalRentalDays = Integer.parseInt(txtArea.getText());
-
-            txtArea = (TextArea)(currentStage.getScene().lookup("#buyCost_input"));             //get buyCost
-            double buyCost = Double.parseDouble(txtArea.getText());
-
-            DataHandler.insertMoto(new Moto(plate, totalRentalDays, 0, buyCost, null));
-            loadAllVehicles();                                                                  //refresh TableView
-
-            txtArea = (TextArea)(currentStage.getScene().lookup("#plate_input"));               //clean TextAreas
-            txtArea.setText("");
-            txtArea = (TextArea)(currentStage.getScene().lookup("#rentalDays_input"));
-            txtArea.setText("");
-            txtArea = (TextArea)(currentStage.getScene().lookup("#buyCost_input"));
-            txtArea.setText("");
-
-        }catch (NumberFormatException e) {      //TODO: Handle this exception by showing something human readable to the user in case something goes wrong
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
         }
-        catch (Exception e) {
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+        TextArea txtArea = (TextArea)(currentStage.getScene().lookup("#plate_input"));
+        String plate = txtArea.getText();
+
+        txtArea = (TextArea)(currentStage.getScene().lookup("#rentalDays_input"));      //get rentalDays
+        int rentalDays = Integer.parseInt(txtArea.getText());
+
+        txtArea = (TextArea)(currentStage.getScene().lookup("#buyCost_input"));         //get buyCost
+        double buyCost = Double.parseDouble(txtArea.getText());
+
+        if (DataHandler.vehicleExists(plate))
+        {
+            DataHandler.updateVehicle(new Moto(plate, rentalDays, 0, buyCost, null));
         }
+        else
+        {
+            DataHandler.insertVehicle(new Moto(plate, rentalDays, 0, buyCost, null));
+        }
+        loadAllVehicles();
+        clearTxtAreas();
     }
 
-    /** Overrides an already saved vehicle by altering values and calling DataHandler to update the vehicle in DB */
-    public void editMoto()
+    /** Handles a double click event and populates the fields with data from the clicked row*/
+    public void populateFields()
     {
+
         Stage currentStage = new Stage();
         ObservableList<Stage> stages = StageHelper.getStages() ;                                //get current Stage to access the TableView
         for(Stage stage : stages)
@@ -115,11 +111,50 @@ public class MainController {
                 currentStage = stage;
             }
         }
+        TableView grid = (TableView)(currentStage.getScene().lookup("#vehicle_tableView"));     //get TableView from Stage
+        Vehicle curClickedVehicle = (Vehicle) grid.getSelectionModel().getSelectedItem();
 
-        TableView grid = (TableView)(currentStage.getScene().lookup("#vehicle_tableView"));    //get TableView from Stage
-        Vehicle vehicle = (Vehicle) grid.getSelectionModel().getSelectedItem();
-        System.out.println("id: " + vehicle.getId());
+        if (curClickedVehicle==null) return;                                                    //clicked same row twice within 300 millis
+        if(curClickedVehicle!=prevClickedVehicle){
+            prevClickedVehicle=curClickedVehicle;
+            lastClickTime=new Date();
+        } else if(curClickedVehicle==prevClickedVehicle) {
+            long diff = new Date().getTime() - lastClickTime.getTime();
+            if (diff < 300){
 
+                TextArea txtArea = (TextArea)(currentStage.getScene().lookup("#plate_input"));  //populate plate
+                txtArea.setText(curClickedVehicle.getPlate());
+
+                txtArea = (TextArea)(currentStage.getScene().lookup("#rentalDays_input"));      //get rentalDays
+                txtArea.setText(curClickedVehicle.getTotalRentDays() + "");
+
+                txtArea = (TextArea)(currentStage.getScene().lookup("#buyCost_input"));         //get buyCost
+                txtArea.setText(curClickedVehicle.getBuyCost() + "");
+
+            } else {
+                lastClickTime = new Date();
+            }
+        }
+    }
+
+    /** Clear text areas */
+    public void clearTxtAreas()
+    {
+        Stage currentStage = new Stage();
+        ObservableList<Stage> stages = StageHelper.getStages() ;                            //get current stage to access textFields
+        for(Stage stage : stages)
+        {
+            if(stage.isShowing())
+            {
+                currentStage = stage;
+            }
+        }
+        TextArea txtArea = (TextArea)(currentStage.getScene().lookup("#plate_input"));      //get and clean
+        txtArea.setText("");
+        txtArea = (TextArea)(currentStage.getScene().lookup("#rentalDays_input"));
+        txtArea.setText("");
+        txtArea = (TextArea)(currentStage.getScene().lookup("#buyCost_input"));
+        txtArea.setText("");
     }
 
     /** Deletes the selected vehicle */
@@ -136,9 +171,9 @@ public class MainController {
             }
         }
         TableView grid = (TableView)(currentStage.getScene().lookup("#vehicle_tableView"));    //get TableView from Stage
-        Moto moto = (Moto) grid.getSelectionModel().getSelectedItem();
+        Vehicle v = (Vehicle) grid.getSelectionModel().getSelectedItem();
 
-        if (moto == null)                                                                       //check for empty Moto
+        if (v == null)                                                                       //check for empty Moto
         {
             AlertOKBox.display("Προσοχή", "Δεν έχετε επιλέξει μηχανάκι προς διαγραφή!");
             return;
@@ -151,7 +186,7 @@ public class MainController {
             return;
         }
 
-        DataHandler.deleteMoto(moto);                                                           //call DataHandler to delete Moto from DB and refresh
+        DataHandler.deleteVehicle(v);                                                           //call DataHandler to delete Moto from DB and refresh
         loadAllVehicles();
 
     }
